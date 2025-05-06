@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Hebrew Transliteration Trainer</title>
+  <link rel="stylesheet" href="public/style.css" />
 </head>
 <body>
-  <h1>Welcome to the Hebrew Transliteration Trainer</h1>
-  <p>This tool will help you learn and practice Hebrew transliteration.</p>
+  <h1>Hebrew Transliteration Trainer</h1>
+
+  <label>
+    <input type="checkbox" id="niqqud-toggle" checked />
+    Show Niqqud
+  </label>
+
+  <div id="quiz-container">
+    <div id="hebrew-word"></div>
+    <input type="text" id="translit-input" placeholder="Enter transliteration" />
+    <button id="check-btn">Check</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>

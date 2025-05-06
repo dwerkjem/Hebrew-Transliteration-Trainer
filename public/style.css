@@ -1,0 +1,13 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 2rem;
+  }
+  #hebrew-word {
+    font-size: 2rem;
+    margin: 1rem 0;
+  }
+  input {
+    font-size: 1.2rem;
+  }
+  
