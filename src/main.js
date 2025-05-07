@@ -8,9 +8,32 @@ const wordDiv = document.getElementById("hebrew-word");
 const translationDiv = document.getElementById("translation-word");
 const input = document.getElementById("translit-input");
 const feedback = document.getElementById("feedback");
-const button = document.getElementById("check-btn");
-const lengthSlider = document.getElementById("length-slider");
-const lengthLabel  = document.getElementById("length-label");
+const button             = document.getElementById("check-btn");
+const lengthSlider       = document.getElementById("length-slider");
+const lengthLabel        = document.getElementById("length-label");
+// new stats spans
+const attemptCountSpan   = document.getElementById("attempt-count");
+const correctCountSpan   = document.getElementById("correct-count");
+const correctPercentSpan = document.getElementById("correct-percent");
+
+// load stats
+let attemptCount = parseInt(localStorage.getItem("attemptCount") ?? "0", 10);
+let correctCount = parseInt(localStorage.getItem("correctCount") ?? "0", 10);
+
+// update UI + persist
+function updateStats() {
+  attemptCountSpan.textContent   = attemptCount;
+  correctCountSpan.textContent   = correctCount;
+  const pct = attemptCount
+    ? Math.round((correctCount / attemptCount) * 100)
+    : 0;
+  correctPercentSpan.textContent = pct;
+  localStorage.setItem("attemptCount", attemptCount);
+  localStorage.setItem("correctCount", correctCount);
+}
+
+// initial render
+updateStats();
 
 // --- load saved prefs ---
 toggle.checked            = JSON.parse(localStorage.getItem("showNiqqud")     ?? "true");
@@ -64,30 +87,34 @@ function nextWord() {
 }
 
 button.addEventListener("click", () => {
-    if (button.textContent === "Check") {
-        // evaluate answer
-        const userInput = input.value.trim().toLowerCase();
-        if (userInput === currentWord.Transliteration.toLowerCase()) {
-            feedback.textContent = "✅ Correct!";
-            feedback.style.color = "green";
-        } else {
-            // show correct transliteration when incorrect
-            feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
-            feedback.style.color = "red";
-        }
+  if (button.textContent === "Check") {
+    // count attempt
+    attemptCount++;
 
-        // show translation after submission (regardless of correctness)
-        if (translationToggle.checked) {
-            translationDiv.textContent = currentWord.Translation;
-        }
-
-        // switch to “Next” mode
-        button.textContent = "Next";
-
+    const userInput = input.value.trim().toLowerCase();
+    if (userInput === currentWord.Transliteration.toLowerCase()) {
+      correctCount++;
+      feedback.textContent = "✅ Correct!";
+      feedback.style.color = "green";
     } else {
-        // Next pressed → load a new word
-        nextWord();
+      feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
+      feedback.style.color = "red";
     }
+
+    // show translation if enabled
+    if (translationToggle.checked) {
+      translationDiv.textContent = currentWord.Translation;
+    }
+
+    // refresh stats
+    updateStats();
+
+    // switch to Next
+    button.textContent = "Next";
+
+  } else {
+    nextWord();
+  }
 });
 
 input.addEventListener("keydown", e => {

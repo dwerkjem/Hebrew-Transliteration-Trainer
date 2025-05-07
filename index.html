@@ -24,7 +24,6 @@
     <input type="checkbox" id="translation-toggle" checked />
     Show Translation
   </label>
-  <!-- new dark-mode toggle -->
   <label>
     <input type="checkbox" id="dark-toggle" />
     Dark Mode
@@ -36,10 +35,17 @@
     <input type="text" id="translit-input" placeholder="Enter transliteration" />
     <button id="check-btn">Check</button>
     <div id="feedback"></div>
+
+    <!-- stats display -->
+    <div id="stats" style="margin-top:12px; font-size:0.9em;">
+      Correct: <span id="correct-count">0</span> |
+      Attempts: <span id="attempt-count">0</span> |
+      Correct %: <span id="correct-percent">0</span>%
+    </div>
   </div>
 
   <label style="display:block; margin-top:1em; text-align:center;">
-    Max Niqqud length: 
+    Max Niqqud length:
     <strong><span id="length-label">5</span></strong>
     <input
       type="range"
