@@ -8,35 +8,40 @@ const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
 
 async function loadWords() {
-  const res = await fetch("/words.json");
-  words = await res.json();
-  nextWord();
+    const res = await fetch("/words.json");
+    words = await res.json();
+    nextWord();
 }
 
 function nextWord() {
-  currentWord = words[Math.floor(Math.random() * words.length)];
-  const showNiqqud = toggle.checked;
-  wordDiv.textContent = showNiqqud ? currentWord.hebrew : currentWord.hebrew_no_niqqud;
-  input.value = "";
-  feedback.textContent = "";
+    currentWord = words[Math.floor(Math.random() * words.length)];
+    const showNiqqud = toggle.checked;
+    // JSON uses capitalized keys
+    wordDiv.textContent = showNiqqud
+        ? currentWord.Niqqud
+        : currentWord.Hebrew;
+    input.value = "";
+    feedback.textContent = "";
 }
 
 button.addEventListener("click", () => {
-  const userInput = input.value.trim().toLowerCase();
-  if (userInput === currentWord.transliteration.toLowerCase()) {
-    feedback.textContent = "✅ Correct!";
-    feedback.style.color = "green";
-  } else {
-    feedback.textContent = `❌ Incorrect. Correct: ${currentWord.transliteration}`;
-    feedback.style.color = "red";
-  }
-  setTimeout(nextWord, 1500);
+    const userInput = input.value.trim().toLowerCase();
+    if (userInput === currentWord.Transliteration.toLowerCase()) {
+        feedback.textContent = "✅ Correct!";
+        feedback.style.color = "green";
+    } else {
+        feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
+        feedback.style.color = "red";
+    }
+    setTimeout(nextWord, 1500);
 });
 
 toggle.addEventListener("change", () => {
-  if (currentWord) {
-    wordDiv.textContent = toggle.checked ? currentWord.hebrew : currentWord.hebrew_no_niqqud;
-  }
+    if (currentWord) {
+        wordDiv.textContent = toggle.checked
+            ? currentWord.Niqqud
+            : currentWord.Hebrew;
+    }
 });
 
 loadWords();
