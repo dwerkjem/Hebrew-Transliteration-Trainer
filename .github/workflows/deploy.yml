@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
 
       - name: Debug GH_TOKEN and Deploy
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
         run: |
           echo "GH_TOKEN prefix: ${GH_TOKEN:0:8}…"
           DEBUG=gh-pages npm run deploy --
