@@ -25,3 +25,10 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Debug GH_TOKEN and Deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "GH_TOKEN prefix: ${GH_TOKEN:0:8}…"
+          DEBUG=gh-pages npm run deploy --
