@@ -1,4 +1,5 @@
 import Chart from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';  // <-- add date adapter for time scale
 
 let words = [];
 let currentWord = null;
@@ -19,6 +20,9 @@ const correctCountSpan   = document.getElementById("correct-count");
 const correctPercentSpan = document.getElementById("correct-percent");
 const overrideBtn       = document.getElementById("override-btn");
 const clearBtn = document.getElementById("clear-data");
+const exportBtn = document.getElementById("export-data");
+const importBtn = document.getElementById("import-data");
+const fileInput = document.getElementById("import-file");
 
 // load stats
 let attemptCount = parseInt(localStorage.getItem("attemptCount") ?? "0", 10);
@@ -130,18 +134,22 @@ button.addEventListener("click", () => {
 // override: user-click to mark correct
 overrideBtn.addEventListener("click", () => {
   correctCount++;
-  // adjust hourlyStats: only bump correct, keep attempts same
-  const H = new Date().getHours().toString();
-  const db = JSON.parse(localStorage.getItem("hourlyStats") ?? "{}");
-  const bucket = db[H] || { attempts: 0, correct: 0 };
-  bucket.correct = Math.min(bucket.attempts, bucket.correct + 1);
-  db[H] = bucket;
-  localStorage.setItem("hourlyStats", JSON.stringify(db));
-
   updateStats();
   feedback.textContent = "✅ Marked correct";
   feedback.style.color = "green";
   overrideBtn.style.display = "none";
+
+  // use the same ISO‐hour key as trackHourly()
+  const now = new Date();
+  const hourKey = now.toISOString().slice(0,13) + ":00";
+  const db = JSON.parse(localStorage.getItem("hourlyStats") ?? "{}");
+  const bucket = db[hourKey] || { attempts: 0, correct: 0 };
+  // only bump correct, leave attempts unchanged
+  bucket.correct = Math.min(bucket.attempts, bucket.correct + 1);
+  db[hourKey] = bucket;
+  localStorage.setItem("hourlyStats", JSON.stringify(db));
+
+  // redraw chart with updated bucket
   drawHourlyChart();
 });
 
@@ -172,78 +180,151 @@ darkToggle.addEventListener("change", () => {
   document.body.classList.toggle("dark", darkToggle.checked);
 });
 
-/** 
- * bump hourly stats in localStorage under "hourlyStats", keyed by hour 0–23 
- * { "0": { attempts: 3, correct: 2 }, "14": { … } }
- */
+
 function trackHourly(isCorrect) {
-  const H = new Date().getHours().toString();
+  const now = new Date();
+  const hourKey = now.toISOString().slice(0,13) + ":00";
   const db = JSON.parse(localStorage.getItem("hourlyStats") ?? "{}");
-  const bucket = db[H] || { attempts: 0, correct: 0 };
+  const bucket = db[hourKey] || { attempts: 0, correct: 0 };
   bucket.attempts++;
   if (isCorrect) bucket.correct++;
-  db[H] = bucket;
+  db[hourKey] = bucket;
   localStorage.setItem("hourlyStats", JSON.stringify(db));
   drawHourlyChart();
 }
 
 /**
- * Draws or updates a line chart showing % correct by hour,
- * only for hours with at least one attempt.
+ * Draw or update a line chart of percent‐correct over time.
+ * Uses {x:Date, y:Number} points so that Chart.js time‐scale updates correctly.
  */
 function drawHourlyChart() {
   const raw = JSON.parse(localStorage.getItem("hourlyStats") ?? "{}");
   const entries = Object.entries(raw)
     .filter(([,b]) => b.attempts > 0)
-    .sort(([a], [b]) => Number(a) - Number(b));
+    .sort(([a], [b]) => new Date(a) - new Date(b));
 
-  const labels = entries.map(([h]) => `${h}:00`);
-  const data   = entries.map(([,b]) =>
-    Math.round((b.correct / b.attempts) * 100)
-  );
+  // build array of {x: Date, y: percent}
+  const dataPoints = entries.map(([hour, b]) => ({
+    x: new Date(hour),
+    y: Math.round((b.correct / b.attempts) * 100)
+  }));
 
   const ctx = document.getElementById("hourly-chart").getContext("2d");
   if (window.hourlyChart) {
-    window.hourlyChart.data.labels = labels;
-    window.hourlyChart.data.datasets[0].data = data;
+    window.hourlyChart.data.datasets[0].data = dataPoints;
     window.hourlyChart.update();
   } else {
     window.hourlyChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels,
         datasets: [{
           label: "Accuracy %",
-          data,
+          data: dataPoints,
           borderColor: "rgba(58,110,165,0.8)",
           backgroundColor: "rgba(58,110,165,0.2)",
           fill: true,
-          tension: 0.3
+          tension: 0.3,
+          pointRadius: 4
         }]
       },
       options: {
         scales: {
-          x: { title: { display: true, text: "Hour" } },
+          x: {
+            type: "time",
+            time: {
+              unit: "hour",
+              displayFormats: { hour: "MMM d, HH:00" }
+            },
+            title: { display: true, text: "Time" }
+          },
           y: {
             beginAtZero: true,
             max: 100,
-            title: { display: true, text: "%" }
+            title: { display: true, text: "Accuracy (%)" }
           }
         },
-        plugins: {
-          legend: { display: false }
-        }
+        plugins: { legend: { display: false } },
+        animation: { duration: 300 }
       }
     });
   }
 }
 
-// after initial load
-loadWords().then(drawHourlyChart);
+// ensure chart is drawn after initial load
+loadWords().then(() => {
+  drawHourlyChart();
+});
 
 clearBtn.addEventListener("click", () => {
   if (confirm("Delete all your data? This cannot be undone.")) {
     localStorage.clear();
     location.reload();
   }
+});
+
+// keys we allow
+const ALLOWED = [
+  "attemptCount", "correctCount",
+  "showNiqqud","showTranslation","darkMode",
+  "hourlyStats"
+];
+
+// gather data from localStorage
+function collectData() {
+  return ALLOWED.reduce((acc, k) => {
+    const v = localStorage.getItem(k);
+    if (v !== null) acc[k] = JSON.parse(v);
+    return acc;
+  }, {});
+}
+
+// export JSON file
+exportBtn.addEventListener("click", () => {
+  const data = JSON.stringify(collectData(), null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "hebrew-trainer-data.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// import JSON file
+importBtn.addEventListener("click", () => {
+  fileInput.value = "";
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files?.[0];
+  if (!file) return;
+  if (!confirm("Importing will overwrite your current data. Continue?")) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const obj = JSON.parse(reader.result);
+      // validate keys and types
+      for (const key of Object.keys(obj)) {
+        if (!ALLOWED.includes(key)) {
+          throw new Error(`Unexpected key: ${key}`);
+        }
+      }
+      // apply
+      ALLOWED.forEach(k => {
+        if (k in obj) {
+          localStorage.setItem(k, JSON.stringify(obj[k]));
+        } else {
+          localStorage.removeItem(k);
+        }
+      });
+      alert("Data imported. Reloading...");
+      location.reload();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to import: " + e.message);
+    }
+  };
+  reader.readAsText(file);
 });

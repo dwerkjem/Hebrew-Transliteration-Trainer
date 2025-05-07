@@ -155,3 +155,6 @@ body.dark button:hover {
 .app-footer .contact-link:hover {
   text-decoration: underline;  /* optional hover feedback */
 }
+.app-footer button {
+  margin: 0 0.3em;
+}
