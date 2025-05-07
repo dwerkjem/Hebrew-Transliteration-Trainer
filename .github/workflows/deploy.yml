@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.DEPLOY_KEY }} # Use the default GITHUB_TOKEN if the secret is not set
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
 
       - name: Debug GH_TOKEN and Deploy
         env:
-          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }} # Use the default GITHUB_TOKEN if deploy key is not available
         run: |
           echo "GH_TOKEN prefix: ${GH_TOKEN:0:8}…"
           DEBUG=gh-pages npm run deploy --
