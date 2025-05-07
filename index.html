@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Hebrew Transliteration Trainer</title>
-  <script type="module" crossorigin src="/Hebrew-Transliteration-Trainer/assets/index-86gTiUjY.js"></script>
-  <link rel="stylesheet" crossorigin href="/Hebrew-Transliteration-Trainer/assets/index-DQm7Pxrd.css">
+  <script type="module" crossorigin src="/Hebrew-Transliteration-Trainer/assets/index-wCQ06LKU.js"></script>
+  <link rel="stylesheet" crossorigin href="/Hebrew-Transliteration-Trainer/assets/index-Ck_OzwWc.css">
 </head>
 <body>
   <header>
@@ -28,9 +28,7 @@
     <div id="translation-word"></div>
     <input type="text" id="translit-input" placeholder="Enter transliteration" />
     <button id="check-btn">Check</button>
-    <button id="override-btn" style="display:none; margin-left:0.5em;">
-      I was correct
-    </button>
+    <button id="override-btn" style="display:none; margin-left:0.5em;">I was correct</button>
     <div id="feedback"></div>
     <div id="stats">
       Correct: <span id="correct-count">0</span> |
@@ -44,6 +42,20 @@
       Max Niqqud length: <strong><span id="length-label">5</span></strong>
       <input type="range" id="length-slider" min="3" max="23" value="5"/>
     </label>
+  </footer>
+
+  <section id="hourly-stats" style="max-width:600px; margin:2em auto; text-align:center;">
+    <h2>Hourly Progress</h2>
+    <canvas id="hourly-chart" width="600" height="300"></canvas>
+  </section>
+
+  <footer class="app-footer">
+    <small>MIT License © dwerkjem</small>
+    <button id="clear-data">Delete my data</button>
+    <button id="export-data">Export Data</button>
+    <button id="import-data">Import Data</button>
+    <input type="file" id="import-file" accept="application/json" style="display:none" />
+    <a href="mailto:derekneilson@gmail.com" class="contact-link">Email me</a>
   </footer>
 
 </body>
