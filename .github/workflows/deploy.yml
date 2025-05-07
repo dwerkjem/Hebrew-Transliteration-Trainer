@@ -25,7 +25,9 @@ jobs:
             git config --local user.name  "github-actions[bot]"
             git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-        - name: Build and deploy
+
+        - name: Build and deploy to gh-pages
           run: npm run deploy
           env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # gh-pages CLI reads this to authenticate
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
