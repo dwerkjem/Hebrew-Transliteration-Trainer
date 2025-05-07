@@ -3,60 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <title>Hebrew Transliteration Trainer</title>
-  <script type="module" crossorigin src="/Hebrew-Transliteration-Trainer/assets/index-C8ublFs3.js"></script>
-  <link rel="stylesheet" crossorigin href="/Hebrew-Transliteration-Trainer/assets/index-CCMfg460.css">
+  <script type="module" crossorigin src="/Hebrew-Transliteration-Trainer/assets/index-B81YGWX9.js"></script>
+  <link rel="stylesheet" crossorigin href="/Hebrew-Transliteration-Trainer/assets/index-DQm7Pxrd.css">
 </head>
 <body>
-  <h1>Hebrew Transliteration Trainer</h1>
+  <header>
+    <h1>Hebrew Transliteration Trainer</h1>
+    <p>
+      For help with Hebrew script, 
+      <a href="https://www.omniglot.com/writing/hebrew.htm" target="_blank" rel="noopener">
+        go here
+      </a>.
+    </p>
+  </header>
 
-  <!-- help link -->
-  <p>
-    For help with Hebrew script,
-    <a href="https://www.omniglot.com/writing/hebrew.htm" target="_blank" rel="noopener">
-      go here
-    </a>.
-  </p>
+  <section class="controls">
+    <label><input type="checkbox" id="niqqud-toggle" checked /> Show Niqqud</label>
+    <label><input type="checkbox" id="translation-toggle" checked /> Show Translation</label>
+    <label><input type="checkbox" id="dark-toggle" /> Dark Mode</label>
+  </section>
 
-  <label>
-    <input type="checkbox" id="niqqud-toggle" checked />
-    Show Niqqud
-  </label>
-  <label>
-    <input type="checkbox" id="translation-toggle" checked />
-    Show Translation
-  </label>
-  <label>
-    <input type="checkbox" id="dark-toggle" />
-    Dark Mode
-  </label>
-
-  <div id="quiz-container">
+  <main id="quiz-container">
     <div id="hebrew-word"></div>
-    <div id="translation-word" style="margin-top:8px;color:#555"></div>
+    <div id="translation-word"></div>
     <input type="text" id="translit-input" placeholder="Enter transliteration" />
     <button id="check-btn">Check</button>
     <div id="feedback"></div>
-
-    <!-- stats display -->
-    <div id="stats" style="margin-top:12px; font-size:0.9em;">
+    <div id="stats">
       Correct: <span id="correct-count">0</span> |
       Attempts: <span id="attempt-count">0</span> |
       Correct %: <span id="correct-percent">0</span>%
     </div>
-  </div>
+  </main>
 
-  <label style="display:block; margin-top:1em; text-align:center;">
-    Max Niqqud length:
-    <strong><span id="length-label">5</span></strong>
-    <input
-      type="range"
-      id="length-slider"
-      min="3"
-      max="23"
-      value="5"
-      style="width:80%; margin-left:0.5em;"
-    />
-  </label>
+  <footer class="slider-group">
+    <label>
+      Max Niqqud length: <strong><span id="length-label">5</span></strong>
+      <input type="range" id="length-slider" min="3" max="23" value="5"/>
+    </label>
+  </footer>
 
 </body>
 </html>
