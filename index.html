@@ -27,9 +27,7 @@
     <div id="translation-word"></div>
     <input type="text" id="translit-input" placeholder="Enter transliteration" />
     <button id="check-btn">Check</button>
-    <button id="override-btn" style="display:none; margin-left:0.5em;">
-      I was correct
-    </button>
+    <button id="override-btn" style="display:none; margin-left:0.5em;">I was correct</button>
     <div id="feedback"></div>
     <div id="stats">
       Correct: <span id="correct-count">0</span> |
@@ -45,13 +43,10 @@
     </label>
   </footer>
 
-  <!-- Hourly progress chart -->
   <section id="hourly-stats" style="max-width:600px; margin:2em auto; text-align:center;">
     <h2>Hourly Progress</h2>
     <canvas id="hourly-chart" width="600" height="300"></canvas>
   </section>
-
-  <script type="module" src="src/main.js"></script>
 
   <footer class="app-footer">
     <small>MIT License © dwerkjem</small>
@@ -59,7 +54,9 @@
     <button id="export-data">Export Data</button>
     <button id="import-data">Import Data</button>
     <input type="file" id="import-file" accept="application/json" style="display:none" />
-    <a href="mailto:derekrneilson@gmail.com" class="contact-link">Email me</a>
+    <a href="mailto:derekneilson@gmail.com" class="contact-link">Email me</a>
   </footer>
+
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>
