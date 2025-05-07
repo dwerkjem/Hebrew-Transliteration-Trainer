@@ -147,3 +147,11 @@ body.dark input[type="text"] {
 body.dark button:hover {
   background: #ffb76b;
 }
+
+.app-footer .contact-link {
+  color: var(--text-light);
+  text-decoration: none;  /* remove underline */
+}
+.app-footer .contact-link:hover {
+  text-decoration: underline;  /* optional hover feedback */
+}
