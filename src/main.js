@@ -8,16 +8,21 @@ const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
 
 async function loadWords() {
-    const res = await fetch("/words.json");
-    words = await res.json();
-    nextWord();
+    const base = import.meta.env.BASE_URL || '/'
+    const res = await fetch(`${base}words.json`)
+    if (!res.ok) {
+        console.error('failed to load words.json', res.status)
+        return
+    }
+    words = await res.json()
+    nextWord()
 }
 
 function nextWord() {
     currentWord = words[Math.floor(Math.random() * words.length)];
-    const showNiqqud = toggle.checked;
+    const showNiqud = toggle.checked;
     // JSON uses capitalized keys
-    wordDiv.textContent = showNiqqud
+    wordDiv.textContent = showNiqud
         ? currentWord.Niqqud
         : currentWord.Hebrew;
     input.value = "";
