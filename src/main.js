@@ -8,6 +8,8 @@ const translationDiv = document.getElementById("translation-word");
 const input = document.getElementById("translit-input");
 const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
+const lengthSlider = document.getElementById("length-slider");
+const lengthLabel  = document.getElementById("length-label");
 
 async function loadWords() {
     const base = import.meta.env.BASE_URL || '/'
@@ -20,12 +22,29 @@ async function loadWords() {
     nextWord()
 }
 
+// live‐update the label
+lengthSlider.addEventListener("input", () => {
+  lengthLabel.textContent = lengthSlider.value;
+});
+
+// pick only words ≤ slider value
 function nextWord() {
-    currentWord = words[Math.floor(Math.random() * words.length)];
-    const showNiqud = toggle.checked;
-    wordDiv.textContent = showNiqud
-        ? currentWord.Niqqud
-        : currentWord.Hebrew;
+  const maxLen = parseInt(lengthSlider.value, 10);
+  const pool   = words.filter(w => w.Niqqud_Length <= maxLen);
+
+  if (!pool.length) {
+    wordDiv.textContent = `No words ≤ length ${maxLen}`;
+    translationDiv.textContent = "";
+    feedback.textContent = "";
+    button.textContent = "Check";
+    return;
+  }
+
+  currentWord = pool[Math.floor(Math.random() * pool.length)];
+  const showNiqud = toggle.checked;
+  wordDiv.textContent = showNiqud
+    ? currentWord.Niqqud
+    : currentWord.Hebrew;
 
     // always clear translation until after submission
     translationDiv.textContent = "";
