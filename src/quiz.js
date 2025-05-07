@@ -22,8 +22,12 @@ export async function initQuiz() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     words = await res.json();
     console.log('loaded', words.length, 'words');
+
     wireLengthSlider();
     wireCheckButton();
+    wireEnterKey();          // ENTER submits Check/Next
+    wireToggleUpdate();      // hot-update Niqqud/Hebrew display
+
     nextWord();
   } catch (err) {
     console.error('⚠️ loadWords error:', err);
@@ -35,6 +39,25 @@ export async function initQuiz() {
 function wireLengthSlider() {
   lengthSlider.addEventListener("input", () => {
     lengthLabel.textContent = lengthSlider.value;
+  });
+}
+
+function wireEnterKey() {
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      button.click();
+    }
+  });
+}
+
+function wireToggleUpdate() {
+  toggle.addEventListener("change", () => {
+    if (currentWord) {
+      wordDiv.textContent = toggle.checked
+        ? currentWord.Niqqud
+        : currentWord.Hebrew;
+    }
   });
 }
 
