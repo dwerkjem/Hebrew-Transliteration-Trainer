@@ -1,17 +1,42 @@
-const attemptCountSpan = document.getElementById("attempt-count");
-const correctCountSpan= document.getElementById("correct-count");
-const correctPercentSpan = document.getElementById("correct-percent");
+// cache DOM spans
+const spanAttempts      = document.getElementById("attempt-count");
+const spanCorrect       = document.getElementById("correct-count");
+const spanCorrectPct    = document.getElementById("correct-percent");
 
-let attemptCount = +localStorage.getItem("attemptCount") ?? 0;
-let correctCount = +localStorage.getItem("correctCount") ?? 0;
-
-export function updateStats() {
-  attemptCountSpan.textContent = attemptCount;
-  correctCountSpan.textContent = correctCount;
-  const pct = attemptCount ? Math.round((correctCount/attemptCount)*100) : 0;
-  correctPercentSpan.textContent = pct;
-  localStorage.setItem("attemptCount", attemptCount);
-  localStorage.setItem("correctCount", correctCount);
+// safe loader for integer counts
+function loadCount(key) {
+  const raw = localStorage.getItem(key);
+  const n = parseInt(raw, 10);
+  return Number.isInteger(n) && n >= 0 ? n : 0;
 }
-export function incrementAttempt() { attemptCount++; }
-export function incrementCorrect() { correctCount++; }
+
+let attempts    = loadCount("attemptCount");
+let correct     = loadCount("correctCount");
+
+// render UI & persist to localStorage
+function render() {
+  const pct = attempts ? Math.round((correct / attempts) * 100) : 0;
+  spanAttempts.textContent   = attempts;
+  spanCorrect.textContent    = correct;
+  spanCorrectPct.textContent = pct;
+  localStorage.setItem("attemptCount", attempts);
+  localStorage.setItem("correctCount", correct);
+}
+
+// public API
+export function updateStats() {
+  render();
+}
+
+export function incrementAttempt() {
+  attempts++;
+  render();
+}
+
+export function incrementCorrect() {
+  correct++;
+  render();
+}
+
+// initialize on load
+render();

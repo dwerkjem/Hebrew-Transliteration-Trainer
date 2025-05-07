@@ -1,113 +1,104 @@
-import { updateStats, incrementAttempt, incrementCorrect } from './stats.js';
-import { trackHourly }      from './charting.js';
+import { incrementAttempt, incrementCorrect } from './stats.js';
+import { track } from './charting.js';
 
-let words = [], currentWord;
-const toggle            = document.getElementById("niqqud-toggle");
-const translationToggle = document.getElementById("translation-toggle");
-const wordDiv           = document.getElementById("hebrew-word");
-const translationDiv    = document.getElementById("translation-word");
-const input             = document.getElementById("translit-input");
-const feedback          = document.getElementById("feedback");
-const button            = document.getElementById("check-btn");
-const overrideBtn       = document.getElementById("override-btn");
-const lengthSlider      = document.getElementById("length-slider");
-const lengthLabel       = document.getElementById("length-label");
+let words = [], current;
+const refs = {
+  toggle: document.getElementById('niqqud-toggle'),
+  trnTgl: document.getElementById('translation-toggle'),
+  word:   document.getElementById('hebrew-word'),
+  trans:  document.getElementById('translation-word'),
+  input:  document.getElementById('translit-input'),
+  feedback: document.getElementById('feedback'),
+  btn:    document.getElementById('check-btn'),
+  over:   document.getElementById('override-btn'),
+  slider: document.getElementById('length-slider'),
+  lbl:    document.getElementById('length-label'),
+};
 
 export async function initQuiz() {
   try {
-    const base = import.meta.env.BASE_URL || '/';
-    const url  = `${base}words.json`;
-    console.log('fetching words from', url);
+    const url = `${import.meta.env.BASE_URL||'/'}words.json`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error(res.statusText);
     words = await res.json();
-    console.log('loaded', words.length, 'words');
-
-    wireLengthSlider();
-    wireCheckButton();
-    wireEnterKey();          // ENTER submits Check/Next
-    wireToggleUpdate();      // hot-update Niqqud/Hebrew display
-
+    if (!Array.isArray(words) || !words.length) {
+      throw new Error('no words found');
+    }
+    wireControls();
     nextWord();
-  } catch (err) {
-    console.error('⚠️ loadWords error:', err);
+  } catch (e) {
+    console.error('quiz init:', e);
     document.getElementById('quiz-container')
-      .textContent = 'Error loading words (see console).';
+      .textContent = 'Error loading quiz data.';
   }
 }
 
-function wireLengthSlider() {
-  lengthSlider.addEventListener("input", () => {
-    lengthLabel.textContent = lengthSlider.value;
+function wireControls() {
+  // length slider
+  refs.lbl.textContent = refs.slider.value;
+  refs.slider.addEventListener('input', () => {
+    refs.lbl.textContent = refs.slider.value;
   });
-}
-
-function wireEnterKey() {
-  input.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
+  // ENTER key
+  refs.input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      button.click();
+      refs.btn.click();
     }
   });
-}
-
-function wireToggleUpdate() {
-  toggle.addEventListener("change", () => {
-    if (currentWord) {
-      wordDiv.textContent = toggle.checked
-        ? currentWord.Niqqud
-        : currentWord.Hebrew;
+  // Niqqud toggle hot update
+  refs.toggle.addEventListener('change', () => {
+    if (current) {
+      refs.word.textContent = refs.toggle.checked
+        ? current.Niqqud
+        : current.Hebrew;
     }
   });
-}
-
-function nextWord() {
-  const maxLen = +lengthSlider.value;
-  const pool = words.filter(w => w.Niqqud_Length <= maxLen);
-  if (!pool.length) {
-    wordDiv.textContent = `No words ≤ length ${maxLen}`; 
-    return;
-  }
-  currentWord = pool[Math.floor(Math.random() * pool.length)];
-  wordDiv.textContent = toggle.checked
-    ? currentWord.Niqqud
-    : currentWord.Hebrew;
-  translationDiv.textContent = '';
-  input.value = '';
-  feedback.textContent = '';
-  button.textContent = 'Check';
-  overrideBtn.style.display = 'none';
-}
-
-function wireCheckButton() {
-  button.addEventListener("click", () => {
-    if (button.textContent === "Check") {
-      incrementAttempt();
-      const user = input.value.trim().toLowerCase();
-      const correct = user === currentWord.Transliteration.toLowerCase();
-      if (correct) {
-        incrementCorrect();
-        feedback.textContent = "✅ Correct!";
-      } else {
-        feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
-        overrideBtn.style.display = 'inline-block';
-      }
-      trackHourly(correct);
-      translationDiv.textContent = translationToggle.checked
-        ? currentWord.Translation
-        : '';
-      updateStats();
-      button.textContent = "Next";
+  // check/next
+  refs.btn.addEventListener('click', () => {
+    if (refs.btn.textContent === 'Check') {
+      attempt();
     } else {
       nextWord();
     }
   });
-
-  overrideBtn.addEventListener("click", () => {
+  // override
+  refs.over.addEventListener('click', () => {
     incrementCorrect();
-    updateStats();
-    feedback.textContent = "✅ Marked correct";
-    overrideBtn.style.display = 'none';
-    trackHourly(true);
+    refs.feedback.textContent = '✅ Marked correct';
+    refs.over.style.display = 'none';
+    track(true);
   });
+}
+
+function attempt() {
+  incrementAttempt();
+  const ans = refs.input.value.trim().toLowerCase();
+  const ok  = ans === current.Transliteration.toLowerCase();
+  if (ok) {
+    incrementCorrect();
+    refs.feedback.textContent = '✅ Correct!';
+  } else {
+    refs.feedback.textContent = `❌ Incorrect. ${current.Transliteration}`;
+    refs.over.style.display = 'inline-block';
+  }
+  refs.trans.textContent = refs.trnTgl.checked
+    ? current.Translation
+    : '';
+  track(ok);
+  refs.btn.textContent = 'Next';
+}
+
+function nextWord() {
+  const max = +refs.slider.value;
+  const pool = words.filter(w => w.Niqqud_Length <= max);
+  current = pool[Math.floor(Math.random()*pool.length)];
+  refs.word.textContent = refs.toggle.checked
+    ? current.Niqqud
+    : current.Hebrew;
+  refs.trans.textContent = '';
+  refs.input.value = '';
+  refs.feedback.textContent = '';
+  refs.over.style.display = 'none';
+  refs.btn.textContent = 'Check';
 }

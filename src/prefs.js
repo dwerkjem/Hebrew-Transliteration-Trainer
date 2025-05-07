@@ -1,21 +1,22 @@
 export function initPrefs() {
-  const toggle            = document.getElementById("niqqud-toggle");
-  const translationToggle = document.getElementById("translation-toggle");
-  const darkToggle        = document.getElementById("dark-toggle");
+  const niq = document.getElementById('niqqud-toggle');
+  const trn = document.getElementById('translation-toggle');
+  const drk = document.getElementById('dark-toggle');
 
-  toggle.checked            = JSON.parse(localStorage.getItem("showNiqqud")     ?? "true");
-  translationToggle.checked = JSON.parse(localStorage.getItem("showTranslation") ?? "true");
-  darkToggle.checked        = JSON.parse(localStorage.getItem("darkMode")        ?? "false");
-  document.body.classList.toggle("dark", darkToggle.checked);
+  // safe parse
+  niq.checked = JSON.parse(localStorage.getItem('showNiqqud')     ?? 'true');
+  trn.checked = JSON.parse(localStorage.getItem('showTranslation')?? 'true');
+  drk.checked = JSON.parse(localStorage.getItem('darkMode')       ?? 'false');
+  document.body.classList.toggle('dark', drk.checked);
 
-  toggle.addEventListener("change", () => {
-    localStorage.setItem("showNiqqud", JSON.stringify(toggle.checked));
+  niq.addEventListener('change', () => {
+    localStorage.setItem('showNiqqud', JSON.stringify(niq.checked));
   });
-  translationToggle.addEventListener("change", () => {
-    localStorage.setItem("showTranslation", JSON.stringify(translationToggle.checked));
+  trn.addEventListener('change', () => {
+    localStorage.setItem('showTranslation', JSON.stringify(trn.checked));
   });
-  darkToggle.addEventListener("change", () => {
-    localStorage.setItem("darkMode", JSON.stringify(darkToggle.checked));
-    document.body.classList.toggle("dark", darkToggle.checked);
+  drk.addEventListener('change', () => {
+    localStorage.setItem('darkMode', JSON.stringify(drk.checked));
+    document.body.classList.toggle('dark', drk.checked);
   });
 }
