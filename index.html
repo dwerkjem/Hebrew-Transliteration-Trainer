@@ -9,12 +9,18 @@
 <body>
   <h1>Hebrew Transliteration Trainer</h1>
 
+  <!-- help link -->
+  <p>
+    For help with Hebrew script, 
+    <a href="https://www.omniglot.com/writing/hebrew.htm" target="_blank" rel="noopener">
+      go here
+    </a>.
+  </p>
+
   <label>
     <input type="checkbox" id="niqqud-toggle" checked />
     Show Niqqud
   </label>
-
-  <!-- add below your Niqqud toggle -->
   <label>
     <input type="checkbox" id="translation-toggle" />
     Show Translation
@@ -22,7 +28,6 @@
 
   <div id="quiz-container">
     <div id="hebrew-word"></div>
-    <!-- new translation placeholder -->
     <div id="translation-word" style="margin-top:8px;color:#555"></div>
     <input type="text" id="translit-input" placeholder="Enter transliteration" />
     <button id="check-btn">Check</button>
