@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Path to the file to clean
-FILE="../trimmed.csv"
+FILE="../Data/trimmed.csv"
 
 # Verify that the file exists
 if [[ ! -f "$FILE" ]]; then

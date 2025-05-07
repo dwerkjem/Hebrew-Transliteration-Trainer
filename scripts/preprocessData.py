@@ -1,7 +1,7 @@
 import pandas as pd
 
 INPUT_CSV  = "Data/raw.csv"
-OUTPUT_CSV = "trimmed.csv"
+OUTPUT_CSV = "Data/trimmed.csv"
 COLS       = ["Hebrew", "Niqqud", "Transliteration", "Translation"]
 COLS.append("Niqqud_Length")         # add new column for Niqqud length
 
