@@ -31,4 +31,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "GH_TOKEN prefix: ${GH_TOKEN:0:8}…"
-          DEBUG=gh-pages npm run deploy -- --verbose
+          DEBUG=gh-pages npm run deploy --
