@@ -15,6 +15,7 @@ const lengthLabel        = document.getElementById("length-label");
 const attemptCountSpan   = document.getElementById("attempt-count");
 const correctCountSpan   = document.getElementById("correct-count");
 const correctPercentSpan = document.getElementById("correct-percent");
+const overrideBtn       = document.getElementById("override-btn");
 
 // load stats
 let attemptCount = parseInt(localStorage.getItem("attemptCount") ?? "0", 10);
@@ -84,6 +85,7 @@ function nextWord() {
 
     // reset button to “Check”
     button.textContent = "Check";
+    overrideBtn.style.display = "none";    // hide override on new word
 }
 
 button.addEventListener("click", () => {
@@ -99,6 +101,7 @@ button.addEventListener("click", () => {
     } else {
       feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
       feedback.style.color = "red";
+      overrideBtn.style.display = "inline-block";  // show override
     }
 
     // show translation if enabled
@@ -115,6 +118,15 @@ button.addEventListener("click", () => {
   } else {
     nextWord();
   }
+});
+
+// override: user-click to mark correct
+overrideBtn.addEventListener("click", () => {
+  correctCount++;
+  updateStats();
+  feedback.textContent = "✅ Marked correct";
+  feedback.style.color = "green";
+  overrideBtn.style.display = "none";
 });
 
 input.addEventListener("keydown", e => {
