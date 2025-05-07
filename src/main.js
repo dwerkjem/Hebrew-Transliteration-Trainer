@@ -2,7 +2,9 @@ let words = [];
 let currentWord = null;
 
 const toggle = document.getElementById("niqqud-toggle");
+const translationToggle = document.getElementById("translation-toggle");
 const wordDiv = document.getElementById("hebrew-word");
+const translationDiv = document.getElementById("translation-word");
 const input = document.getElementById("translit-input");
 const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
@@ -21,32 +23,59 @@ async function loadWords() {
 function nextWord() {
     currentWord = words[Math.floor(Math.random() * words.length)];
     const showNiqud = toggle.checked;
-    // JSON uses capitalized keys
     wordDiv.textContent = showNiqud
         ? currentWord.Niqqud
         : currentWord.Hebrew;
+
+    // always clear translation until after submission
+    translationDiv.textContent = "";
     input.value = "";
     feedback.textContent = "";
+
+    // reset button to “Check”
+    button.textContent = "Check";
 }
 
 button.addEventListener("click", () => {
-    const userInput = input.value.trim().toLowerCase();
-    if (userInput === currentWord.Transliteration.toLowerCase()) {
-        feedback.textContent = "✅ Correct!";
-        feedback.style.color = "green";
+    if (button.textContent === "Check") {
+        // evaluate answer
+        const userInput = input.value.trim().toLowerCase();
+        if (userInput === currentWord.Transliteration.toLowerCase()) {
+            feedback.textContent = "✅ Correct!";
+            feedback.style.color = "green";
+        } else {
+            // show correct transliteration when incorrect
+            feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
+            feedback.style.color = "red";
+        }
+
+        // show translation after submission (regardless of correctness)
+        if (translationToggle.checked) {
+            translationDiv.textContent = currentWord.Translation;
+        }
+
+        // switch to “Next” mode
+        button.textContent = "Next";
+
     } else {
-        feedback.textContent = `❌ Incorrect. Correct: ${currentWord.Transliteration}`;
-        feedback.style.color = "red";
+        // Next pressed → load a new word
+        nextWord();
     }
-    setTimeout(nextWord, 1500);
 });
 
+// Enter = submit or next
+input.addEventListener("keydown", e => {
+    if (e.key === "Enter") button.click();
+});
+
+// you can still toggle niqqud on the fly
 toggle.addEventListener("change", () => {
-    if (currentWord) {
+    if (currentWord && button.textContent === "Check") {
         wordDiv.textContent = toggle.checked
             ? currentWord.Niqqud
             : currentWord.Hebrew;
     }
 });
 
+// translation‐toggle has no immediate effect until after “Check”
 loadWords();
