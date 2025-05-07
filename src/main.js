@@ -10,6 +10,7 @@ const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
 const lengthSlider = document.getElementById("length-slider");
 const lengthLabel  = document.getElementById("length-label");
+const darkToggle = document.getElementById("dark-toggle");
 
 async function loadWords() {
     const base = import.meta.env.BASE_URL || '/'
@@ -82,12 +83,10 @@ button.addEventListener("click", () => {
     }
 });
 
-// Enter = submit or next
 input.addEventListener("keydown", e => {
     if (e.key === "Enter") button.click();
 });
 
-// you can still toggle niqqud on the fly
 toggle.addEventListener("change", () => {
     if (currentWord && button.textContent === "Check") {
         wordDiv.textContent = toggle.checked
@@ -96,5 +95,8 @@ toggle.addEventListener("change", () => {
     }
 });
 
-// translation‐toggle has no immediate effect until after “Check”
+darkToggle.addEventListener("change", () => {
+  document.body.classList.toggle("dark", darkToggle.checked);
+});
+
 loadWords();

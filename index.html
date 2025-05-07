@@ -10,7 +10,7 @@
 
   <!-- help link -->
   <p>
-    For help with Hebrew script, 
+    For help with Hebrew script,
     <a href="https://www.omniglot.com/writing/hebrew.htm" target="_blank" rel="noopener">
       go here
     </a>.
@@ -24,6 +24,11 @@
     <input type="checkbox" id="translation-toggle" checked />
     Show Translation
   </label>
+  <!-- new dark-mode toggle -->
+  <label>
+    <input type="checkbox" id="dark-toggle" />
+    Dark Mode
+  </label>
 
   <div id="quiz-container">
     <div id="hebrew-word"></div>
@@ -33,15 +38,14 @@
     <div id="feedback"></div>
   </div>
 
-  <!-- moved slider to bottom -->
   <label style="display:block; margin-top:1em; text-align:center;">
-    Max Niqqud length: 
+    Max Niqqud length:
     <strong><span id="length-label">5</span></strong>
-    <input 
-      type="range" 
-      id="length-slider" 
-      min="1" 
-      max="23" 
+    <input
+      type="range"
+      id="length-slider"
+      min="1"
+      max="23"
       value="5"
       style="width:80%; margin-left:0.5em;"
     />

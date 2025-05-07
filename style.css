@@ -11,3 +11,19 @@ body {
     font-size: 1.2rem;
   }
   
+  body.dark {
+    background-color: #121212;
+    color: #eee;
+  }
+  body.dark a {
+    color: #66ccff;
+  }
+  body.dark input,
+  body.dark button {
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+  }
+  body.dark label {
+    color: #eee;
+  }
