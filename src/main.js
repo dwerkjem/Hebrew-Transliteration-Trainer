@@ -1,8 +1,9 @@
 let words = [];
 let currentWord = null;
 
-const toggle = document.getElementById("niqqud-toggle");
-const translationToggle = document.getElementById("translation-toggle");
+const toggle             = document.getElementById("niqqud-toggle");
+const translationToggle  = document.getElementById("translation-toggle");
+const darkToggle         = document.getElementById("dark-toggle");
 const wordDiv = document.getElementById("hebrew-word");
 const translationDiv = document.getElementById("translation-word");
 const input = document.getElementById("translit-input");
@@ -10,7 +11,13 @@ const feedback = document.getElementById("feedback");
 const button = document.getElementById("check-btn");
 const lengthSlider = document.getElementById("length-slider");
 const lengthLabel  = document.getElementById("length-label");
-const darkToggle = document.getElementById("dark-toggle");
+
+// --- load saved prefs ---
+toggle.checked            = JSON.parse(localStorage.getItem("showNiqqud")     ?? "true");
+translationToggle.checked = JSON.parse(localStorage.getItem("showTranslation") ?? "true");
+darkToggle.checked        = JSON.parse(localStorage.getItem("darkMode")        ?? "false");
+// apply dark class
+document.body.classList.toggle("dark", darkToggle.checked);
 
 async function loadWords() {
     const base = import.meta.env.BASE_URL || '/'
@@ -88,14 +95,25 @@ input.addEventListener("keydown", e => {
 });
 
 toggle.addEventListener("change", () => {
-    if (currentWord && button.textContent === "Check") {
-        wordDiv.textContent = toggle.checked
-            ? currentWord.Niqqud
-            : currentWord.Hebrew;
-    }
+  localStorage.setItem("showNiqqud", toggle.checked);
+  if (currentWord && button.textContent === "Check") {
+    wordDiv.textContent = toggle.checked
+      ? currentWord.Niqqud
+      : currentWord.Hebrew;
+  }
+});
+
+translationToggle.addEventListener("change", () => {
+  localStorage.setItem("showTranslation", translationToggle.checked);
+  if (button.textContent !== "Check" && currentWord) {
+    translationDiv.textContent = translationToggle.checked
+      ? currentWord.Translation
+      : "";
+  }
 });
 
 darkToggle.addEventListener("change", () => {
+  localStorage.setItem("darkMode", darkToggle.checked);
   document.body.classList.toggle("dark", darkToggle.checked);
 });
 
