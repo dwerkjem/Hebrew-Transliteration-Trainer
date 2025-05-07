@@ -1,5 +1,9 @@
-import { incrementAttempt, incrementCorrect } from './stats.js';
-import { track } from './charting.js';
+import {
+  incrementAttempt,
+  incrementCorrect,
+  overrideCorrect
+} from './stats.js';
+import { track, trackCorrectOnly } from './charting.js';  // ← add trackCorrectOnly
 
 let words = [], current;
 const refs = {
@@ -64,10 +68,10 @@ function wireControls() {
   });
   // override
   refs.over.addEventListener('click', () => {
-    incrementCorrect();
+    overrideCorrect();
     refs.feedback.textContent = '✅ Marked correct';
     refs.over.style.display = 'none';
-    track(true);
+    trackCorrectOnly();       // ← only bump correct in the chart
   });
 }
 

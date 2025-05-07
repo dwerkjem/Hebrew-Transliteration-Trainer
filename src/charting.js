@@ -16,16 +16,25 @@ export function initCharting() {
   draw();
 }
 
-export function track(isCorrect) {
+export function track(ok) {
   const now = new Date();
-  const key = now.toISOString().slice(0,13)+':00';
-  const db = JSON.parse(localStorage.getItem('hourlyStats')||'{}');
-  const b = db[key]||{attempts:0,correct:0};
-  b.attempts++;
-  if (isCorrect) b.correct++;
-  db[key]=b;
-  localStorage.setItem('hourlyStats', JSON.stringify(db));
-  draw();
+  const h   = now.getHours();
+  const stats = loadHourly(); 
+  if (!stats[h]) stats[h] = { attempts: 0, correct: 0 };
+  stats[h].attempts++;
+  if (ok) stats[h].correct++;
+  saveHourly(stats);
+  renderChart(stats);
+}
+
+export function trackCorrectOnly() {
+  const now = new Date();
+  const h   = now.getHours();
+  const stats = loadHourly();
+  if (!stats[h]) stats[h] = { attempts: 0, correct: 0 };
+  stats[h].correct++;
+  saveHourly(stats);
+  renderChart(stats);
 }
 
 function group(raw) {
@@ -78,4 +87,16 @@ export function draw() {
       }
     });
   }
+}
+
+function loadHourly() {
+  return JSON.parse(localStorage.getItem('hourlyStats') || '{}');
+}
+
+function saveHourly(stats) {
+  localStorage.setItem('hourlyStats', JSON.stringify(stats));
+}
+
+function renderChart(stats) {
+  draw();
 }

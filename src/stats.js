@@ -38,5 +38,13 @@ export function incrementCorrect() {
   render();
 }
 
+// override: remove one attempt and add one correct
+export function overrideCorrect() {
+  if (attempts > 0) {
+    correct++;
+    render();
+  }
+}
+
 // initialize on load
 render();
