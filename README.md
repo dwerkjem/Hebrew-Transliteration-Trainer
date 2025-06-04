@@ -8,6 +8,11 @@ A simple web‐based trainer that helps you practice transliterating Hebrew into
 - **Max Niqqud Length** slider to limit practice words by their Niqqud character count  
 - **Enter** key submits your answer; click “Next” for a new word  
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) (version 16 or higher recommended)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+
 ## Getting Started
 
 1. Clone the repo  

@@ -18,21 +18,22 @@ export function initCharting() {
 
 export function track(ok) {
   const now = new Date();
-  const h   = now.getHours();
+  // Use ISO string for the current hour
+  const hourKey = now.toISOString().slice(0, 13) + ':00';
   const stats = loadHourly(); 
-  if (!stats[h]) stats[h] = { attempts: 0, correct: 0 };
-  stats[h].attempts++;
-  if (ok) stats[h].correct++;
+  if (!stats[hourKey]) stats[hourKey] = { attempts: 0, correct: 0 };
+  stats[hourKey].attempts++;
+  if (ok) stats[hourKey].correct++;
   saveHourly(stats);
   renderChart(stats);
 }
 
 export function trackCorrectOnly() {
   const now = new Date();
-  const h   = now.getHours();
+  const hourKey = now.toISOString().slice(0, 13) + ':00';
   const stats = loadHourly();
-  if (!stats[h]) stats[h] = { attempts: 0, correct: 0 };
-  stats[h].correct++;
+  if (!stats[hourKey]) stats[hourKey] = { attempts: 0, correct: 0 };
+  stats[hourKey].correct++;
   saveHourly(stats);
   renderChart(stats);
 }
@@ -58,6 +59,25 @@ function group(raw) {
     .map(([k,b])=>({ x:new Date(k), y:Math.round(b.correct/b.attempts*100) }));
 }
 
+// Fill missing hours for continuity in time series
+function fillMissingHours(data, start, end) {
+  const filled = [];
+  let current = new Date(start);
+  const endDate = new Date(end);
+  let i = 0;
+  while (current <= endDate) {
+    const hourISO = current.toISOString().slice(0, 13) + ':00';
+    if (i < data.length && data[i].x.getTime() === current.getTime()) {
+      filled.push(data[i]);
+      i++;
+    } else {
+      filled.push({ x: new Date(current), y: null });
+    }
+    current.setHours(current.getHours() + 1);
+  }
+  return filled;
+}
+
 export function draw() {
   const raw = JSON.parse(localStorage.getItem('hourlyStats')||'{}');
   const data = group(raw);
@@ -65,25 +85,35 @@ export function draw() {
   if (!ctx) return;
   const unit = view==='hourly'?'hour':view==='daily'?'day':'week';
 
+  // Fill missing hours for time series continuity (hourly only)
+  let chartData = data;
+  if (view === 'hourly' && data.length > 1) {
+    const start = data[0].x;
+    const end = data[data.length - 1].x;
+    chartData = fillMissingHours(data, start, end);
+  }
+
   if (chart) {
-    chart.data.datasets[0].data = data;
+    chart.data.datasets[0].data = chartData;
     chart.options.scales.x.time.unit = unit;
     chart.update();
   } else {
     chart = new Chart(ctx, {
       type:'line',
       data:{ datasets:[{
-        label:'Accuracy %', data,
+        label:'Accuracy %', data: chartData,
         borderColor:'#3a6ea5',
         backgroundColor:'rgba(58,110,165,0.2)',
         fill:true, tension:0.3
       }]},
       options:{
         scales:{
-          x:{ type:'time', time:{ unit }, title:{ display:true,text:'Time' } },
+          x:{ type:'time', time:{ unit, displayFormats: { hour: 'yyyy-MM-dd HH:00' } }, title:{ display:true,text:'Time' } },
           y:{ beginAtZero:true, max:100, title:{ display:true,text:'%' } }
         },
-        plugins:{ legend:{ display:false } }
+        plugins:{ legend:{ display:false } },
+        interaction: { mode: 'nearest', intersect: false },
+        spanGaps: false
       }
     });
   }
