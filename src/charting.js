@@ -113,7 +113,7 @@ export function draw() {
         },
         plugins:{ legend:{ display:false } },
         interaction: { mode: 'nearest', intersect: false },
-        spanGaps: false
+        spanGaps: true
       }
     });
   }
