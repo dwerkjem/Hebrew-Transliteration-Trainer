@@ -36,6 +36,10 @@ This project is configured for GitHub Pages. To deploy:
 npm run deploy
 ```
 
+### Deployment Notes
+Be sure to have the `gh-pages` branch set up in your repository. The deployment script will push the built files to this branch.
+After running the deploy command, your site will be available at `https://<username>.github.io/<repository-name>/`.
+
 Your site will be published at  
 https://dwerkjem.github.io/Hebrew-Transliteration-Trainer/
 
