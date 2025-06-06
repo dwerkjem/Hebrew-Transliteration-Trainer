@@ -40,8 +40,15 @@ export async function initQuiz() {
 function wireControls() {
   // length slider
   refs.lbl.textContent = refs.slider.value;
+  // Load from localStorage if available
+  const storedMax = localStorage.getItem('maxNiqqudLength');
+  if (storedMax !== null) {
+    refs.slider.value = storedMax;
+    refs.lbl.textContent = storedMax;
+  }
   refs.slider.addEventListener('input', () => {
     refs.lbl.textContent = refs.slider.value;
+    localStorage.setItem('maxNiqqudLength', refs.slider.value);
   });
   // ENTER key
   refs.input.addEventListener('keydown', e => {

@@ -1,6 +1,7 @@
 export const ALLOWED = [
   'attemptCount','correctCount',
-  'showNiqqud','showTranslation','darkMode',
+  'showNiqqud','showTranslation',
+  'darkMode','maxNiqqudLength',
   'hourlyStats'
 ];
 
